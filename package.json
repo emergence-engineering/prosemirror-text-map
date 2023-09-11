@@ -33,7 +33,6 @@
   },
   "homepage": "https://github.com/emergence-engineering/prosemirror-text-map#readme",
   "dependencies": {
-    "pnpm": "^8.7.5",
     "prosemirror-model": "^1.19.3",
     "prosemirror-test-builder": "^1.1.1"
   },
