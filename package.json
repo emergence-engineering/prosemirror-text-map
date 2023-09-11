@@ -11,8 +11,8 @@
     "rebuild": "rollup -c --bundleConfigAsCjs",
     "dev": "rollup -c -w --bundleConfigAsCjs",
     "format": "eslint src --ext .ts --fix",
-    "prepublishOnly": "pnpm run build && pnpm run lint",
-    "version": "pnpm run format && git add -A src",
+    "prepublishOnly": "npm run build && npm run lint",
+    "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
     "lint": "tsc --noEmit && eslint src --ext .ts",
     "test": "jest",
@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/emergence-engineering/prosemirror-text-map#readme",
   "dependencies": {
+    "pnpm": "^8.7.5",
     "prosemirror-model": "^1.19.3",
     "prosemirror-test-builder": "^1.1.1"
   },

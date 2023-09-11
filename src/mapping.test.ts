@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { EditorState } from "prosemirror-state";
 import { doc, p, h1, schema, em, strong } from "prosemirror-test-builder";
 
@@ -19,7 +20,6 @@ describe("mapping utils", () => {
   );
   const state = EditorState.create({ doc: initialDoc, schema });
   const { text, mapping } = docToTextWithMapping(initialDoc);
-  console.log({ text });
   const cases = Array.from(new Array(text.length)).map((i, idx) => idx);
   it.each(cases)("map between text position and document position", (idx) => {
     // Create an insertion in the text. Map that position to a document position, apply a transaction with a character insert, get the text back.
