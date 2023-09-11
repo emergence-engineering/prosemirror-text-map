@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { EditorState } from "prosemirror-state";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { doc, p, h1, schema, em, strong } from "prosemirror-test-builder";
 
 import { textPosToDocPos, docToTextWithMapping } from "./mapping";
