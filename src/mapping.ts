@@ -5,20 +5,50 @@ export type TextMappingItem = {
   textPos: number;
 };
 
+export type TextWithMapping = {
+  text: string;
+  mapping: TextMappingItem[];
+};
+
+export type MappingOptions = {
+  nodeToTextMappingOverride: {
+    [key: string]: (node: Node) => TextWithMapping;
+  };
+};
+
 const defaultMapping = [{ docPos: 1, textPos: 0 }];
 
 export const docToTextWithMapping = (
   doc: Node,
-): { text: string; mapping: TextMappingItem[] } => {
+  options: Partial<MappingOptions> = {},
+): TextWithMapping => {
+  const nodeToTextMapping = options.nodeToTextMappingOverride || {};
   let text = "";
   let currentBlock = "";
   let firstBlockDone = false;
   const mapping: TextMappingItem[] = [];
   doc.descendants((node, pos) => {
+    if (node.type.name in nodeToTextMapping) {
+      const { text: nodeText, mapping: nodeMapping } =
+        nodeToTextMapping[node.type.name](node);
+      if (!firstBlockDone) {
+        firstBlockDone = true;
+      } else {
+        text += `${currentBlock}\n`;
+      }
+      currentBlock = nodeText;
+      mapping.push(
+        ...nodeMapping.map(({ docPos, textPos }) => ({
+          docPos: docPos + pos + 1,
+          textPos: text.length + textPos,
+        })),
+      );
+      return false;
+    }
     if (node.type.isBlock) {
       if (!firstBlockDone) {
         firstBlockDone = true;
-        return;
+        return true;
       }
       text += `${currentBlock}\n`;
       currentBlock = "";
@@ -26,6 +56,7 @@ export const docToTextWithMapping = (
       mapping.push({ docPos: pos, textPos: text.length + currentBlock.length });
       currentBlock += `${node.text}`;
     }
+    return true;
   });
   text += currentBlock;
   return { text, mapping: mapping.length ? mapping : defaultMapping };
