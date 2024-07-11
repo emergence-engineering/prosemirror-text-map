@@ -78,7 +78,12 @@ export const textPosToDocPos = (
       textPos >= mapping[i].textPos &&
       (mapping[i + 1] === undefined || textPos < mapping[i + 1].textPos)
     ) {
-      return mapping[i].docPos + (textPos - mapping[i].textPos);
+      const posInText = textPos - mapping[i].textPos;
+      const correctedPosInText =
+        mapping[i + 1] !== undefined
+          ? Math.min(posInText, mapping[i + 1].docPos)
+          : posInText;
+      return mapping[i].docPos + correctedPosInText;
     }
   }
   throw new Error(
