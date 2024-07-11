@@ -29,20 +29,28 @@ export const docToTextWithMapping = (
   const mapping: TextMappingItem[] = [];
   doc.descendants((node, pos) => {
     if (node.type.name in nodeToTextMapping) {
-      const { text: nodeText, mapping: nodeMapping } =
+      const { mapping: nodeMapping, text: nodeText } =
         nodeToTextMapping[node.type.name](node);
-      if (!firstBlockDone) {
-        firstBlockDone = true;
+      if (!firstBlockDone || node.type.isInline) {
+        mapping.push(
+          ...nodeMapping.map(({ docPos, textPos }) => ({
+            docPos: docPos + pos + 1,
+            textPos: text.length + currentBlock.length + textPos,
+          })),
+        );
+        currentBlock += nodeText;
+        if (!node.type.isInline) {
+          firstBlockDone = true;
+        }
       } else {
-        text += `${currentBlock}\n`;
+        mapping.push(
+          ...nodeMapping.map(({ docPos, textPos }) => ({
+            docPos: docPos + pos + 1,
+            textPos: text.length + currentBlock.length + textPos + 1,
+          })),
+        );
+        currentBlock += `\n${nodeText}`;
       }
-      currentBlock = nodeText;
-      mapping.push(
-        ...nodeMapping.map(({ docPos, textPos }) => ({
-          docPos: docPos + pos + 1,
-          textPos: text.length + textPos,
-        })),
-      );
       return false;
     }
     if (node.type.isBlock) {
